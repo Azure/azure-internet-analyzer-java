@@ -1,0 +1,1 @@
+{"s":5000,"n":3,"e":[{"e":"bing.com","w":50,"m":3,"ex":"dummyExpId"}],"r":["localhost:8090/report/r.gif","localhost:8090/apc/trans.gif"]}

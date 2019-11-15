@@ -1,0 +1,79 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
+
+repositories {
+    mavenCentral()
+}
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "28.0.3"
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    // Required -- JUnit 4 framework
+    testImplementation 'junit:junit:4.12'
+    // Optional -- Robolectric environment
+    testImplementation 'androidx.test:core:1.0.0'
+    // Optional -- Mockito framework
+    testImplementation 'org.mockito:mockito-core:1.10.19'
+
+    testImplementation 'org.json:json:20140107'
+
+    // For mock http servers
+    testImplementation 'com.github.tomakehurst:wiremock-jre8:2.24.0'
+
+    // https://mvnrepository.com/artifact/com.h2database/h2
+    // implementation 'com.h2database:h2:1.4.200'
+}
+
+allprojects {
+    repositories {
+        maven { url "https://jitpack.io" }
+    }
+}
+
+/*publishing {
+    publications {
+        myPulication(MavenPublication) {
+            groupId 'com.example.project'
+            version '1.0.2'
+            artifactId 'myProject'
+            artifact("$buildDir/outputs/aar/myProject.aar")
+        }
+    }
+    repositories {
+        maven {
+            url "http://www.myrepository.com"
+        }
+    }
+}*/
