@@ -1,0 +1,7 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="android.internetanalyzer.internetanalyzerlibrary">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+</manifest>
+
+

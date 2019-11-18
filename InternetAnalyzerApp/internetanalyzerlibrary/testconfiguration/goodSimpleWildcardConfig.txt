@@ -1,0 +1,1 @@
+{"s":5000,"n":3,"e":[{"e":"*.fp.measure.office.com","w":10,"m":3}],"r":["localhost:8090/report/r.gif","localhost:8090/apc/trans.gif"]}

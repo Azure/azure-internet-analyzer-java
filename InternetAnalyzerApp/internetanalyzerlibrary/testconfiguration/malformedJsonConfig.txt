@@ -1,0 +1,1 @@
+{"s":5000,"n":3,"e":[{"e":"bing.com","w":50,"m":4}],"r":["fp.msedge.net/r.gif","odinvzc.azureedge.net/apc/trans.gif
