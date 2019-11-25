@@ -7,10 +7,6 @@
  *--------------------------------------------------------------------------------------------*/
 package com.microsoft.azure.internetanalyzer;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,12 +30,10 @@ public class InternetAnalyzerClient {
 
     private static final String reportUploadUrlScheme = "https://";
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public static firstSuccessfulHttpGetResult execute(String monitorId, String tag, String[] configUrls) throws JSONException, IOException, CertificateEncodingException, IllegalArgumentException {
         return execute(monitorId, tag, getConfiguration(configUrls), reportUploadUrlScheme);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public static firstSuccessfulHttpGetResult execute(String monitorId, String tag, String configuration, String reportUploadPrefix) throws JSONException, IOException, CertificateEncodingException, IllegalArgumentException {
 
         //validate monitor Id, configuration, reportUploadPrefix is non-null or empty
@@ -54,7 +48,6 @@ public class InternetAnalyzerClient {
         return tryUploadReport(formatReport(reportItems, monitorId, tag), uploadEndpoints, reportUploadPrefix);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public static String getConfiguration(String[] configUrls) throws IOException {
         firstSuccessfulHttpGetResult measurementConfigs = executeFirstSuccessfulHttpGet(configUrls);
         return measurementConfigs.getResult();
@@ -64,7 +57,6 @@ public class InternetAnalyzerClient {
      * Executes the http GET for URLs in chronological order until the first url succeeds.
      * Returns the result as a JSONObject, if result is json parsable
      */
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private static firstSuccessfulHttpGetResult executeFirstSuccessfulHttpGet(String[] Urls) throws IOException {
 
         for (String Url : Urls) {
@@ -98,7 +90,6 @@ public class InternetAnalyzerClient {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private static firstSuccessfulHttpGetResult tryUploadReport(String reportData, JSONArray uploadEndpoints, String uploadEndpointPrefix) throws JSONException, IOException {
         String[] uploadReports = new String[uploadEndpoints.length()];
         for (int i = 0; i < uploadEndpoints.length(); i++) {
@@ -114,7 +105,6 @@ public class InternetAnalyzerClient {
         return executeFirstSuccessfulHttpGet(uploadReports);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private static String formatReport(List<IReportItem> reportItems, String monitorId, String tag) throws JSONException, UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
         result.append("MonitorId=").append(monitorId);

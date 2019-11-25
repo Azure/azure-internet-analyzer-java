@@ -17,7 +17,7 @@ public interface IMeasurement {
      * Takes and reports measurements
      *
      * @param report - list of report items
-     * @return Nothing
+     * @throws CertificateEncodingException On a certificate encoding error
      * @throws IOException On input error
      * @see IOException
      */
