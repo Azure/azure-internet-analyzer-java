@@ -34,7 +34,7 @@ public class InternetAnalyzerClientUnitTest {
 
     @Test(expected = IOException.class)
     public void CreateMeasurementAgentTestInvalidConfig() throws IOException, JSONException, CertificateEncodingException {
-        String localConfigPath = "/testConfiguration/malformedJsonConfig.txt";
+        String localConfigPath = "/src/test/fixtures/malformedJsonConfig.txt";
         InternetAnalyzerClient.execute("testMonitorId,", "testTag", new String[]{localConfigPath});
     }
 
@@ -46,14 +46,14 @@ public class InternetAnalyzerClientUnitTest {
 
     @Test(expected = IOException.class)
     public void CreateMeasurementAgentTestEmptyConfig() throws IOException, JSONException, CertificateEncodingException {
-        String localConfigPath = "/testConfiguration/emptyJsonConfig.txt";
+        String localConfigPath = "/src/test/fixtures/emptyJsonConfig.txt";
         InternetAnalyzerClient.execute("testMonitorId,", "testTag", new String[]{localConfigPath});
     }
 
     @Test
     public void ExecuteWithSimpleConfigurationTest() throws JSONException, IOException, CertificateEncodingException {
 
-        String[] localConfigPaths = {"/testConfiguration/goodSimpleConfig.txt", "/testConfiguration/goodSimpleConfigHttps.txt", "/testConfiguration/goodSimpleConfigHttp.txt", "/testConfiguration/goodSimpleConfigWithExperimentId.txt"};
+        String[] localConfigPaths = {"/src/test/fixtures/goodSimpleConfig.txt", "/src/test/fixtures/goodSimpleConfigHttps.txt", "/src/test/fixtures/goodSimpleConfigHttp.txt", "/src/test/fixtures/goodSimpleConfigWithExperimentId.txt"};
         for (String localConfigPath : localConfigPaths) {
             String configContents = TestUtils.GetFileContents(localConfigPath);
 
@@ -87,7 +87,7 @@ public class InternetAnalyzerClientUnitTest {
     @Test
     public void ExecuteWithSimpleConfigurationWithExperimentIdTest() throws JSONException, IOException, CertificateEncodingException {
 
-        String[] localConfigPaths = {"/testConfiguration/goodSimpleConfigWithExperimentId.txt"};
+        String[] localConfigPaths = {"/src/test/fixtures/goodSimpleConfigWithExperimentId.txt"};
         for (String localConfigPath : localConfigPaths) {
             String configContents = TestUtils.GetFileContents(localConfigPath);
 
@@ -125,7 +125,7 @@ public class InternetAnalyzerClientUnitTest {
     @Test
     public void ExecuteWithComplexConfigurationTest() throws JSONException, IOException, CertificateEncodingException {
 
-        String localConfigPath = "/testConfiguration/goodComplexConfig.txt";
+        String localConfigPath = "/src/test/fixtures/goodComplexConfig.txt";
         String configContents = TestUtils.GetFileContents(localConfigPath);
         stubFor(get(urlEqualTo(localConfigPath))
                 .willReturn(aResponse()
@@ -158,7 +158,7 @@ public class InternetAnalyzerClientUnitTest {
     @Test
     public void ExecuteWithComplexConfigurationSpaceInTag() throws JSONException, IOException, CertificateEncodingException {
 
-        String localConfigPath = "/testConfiguration/goodComplexConfig.txt";
+        String localConfigPath = "/src/test/fixtures/goodComplexConfig.txt";
         String configContents = TestUtils.GetFileContents(localConfigPath);
         stubFor(get(urlEqualTo(localConfigPath))
                 .willReturn(aResponse()
@@ -191,7 +191,7 @@ public class InternetAnalyzerClientUnitTest {
     @Test
     public void ExecuteSimpleConfigEmptyEndpointListTest() throws JSONException, IOException, CertificateEncodingException {
 
-        String localConfigPath = "/testConfiguration/goodSimpleConfigEmptyEndpointList.txt";
+        String localConfigPath = "/src/test/fixtures/goodSimpleConfigEmptyEndpointList.txt";
         String configContents = TestUtils.GetFileContents(localConfigPath);
         stubFor(get(urlEqualTo(localConfigPath))
                 .willReturn(aResponse()
@@ -224,7 +224,7 @@ public class InternetAnalyzerClientUnitTest {
     @Test(expected = IllegalArgumentException.class)
     public void ExecuteMissingMonitorIdErrTest() throws JSONException, IOException, CertificateEncodingException {
 
-        String localConfigPath = "/testConfiguration/goodComplexConfig.txt";
+        String localConfigPath = "/src/test/fixtures/goodComplexConfig.txt";
         String configContents = TestUtils.GetFileContents(localConfigPath);
         stubFor(get(urlEqualTo(localConfigPath))
                 .willReturn(aResponse()
@@ -243,7 +243,7 @@ public class InternetAnalyzerClientUnitTest {
     @Test
     public void GetConfigurationWithNoConfigurationTest() throws JSONException, IOException {
 
-        String localConfigPath = "/TestConfiguration/emptyConfig.txt";
+        String localConfigPath = "/src/test/fixtures/emptyConfig.txt";
         stubFor(get(urlEqualTo(localConfigPath))
                 .willReturn(aResponse()
                         .withStatus(200)
