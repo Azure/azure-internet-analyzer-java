@@ -46,17 +46,23 @@ public class FetchMeasurement implements IMeasurement {
         this.fetchUrls = generateFetchURLs(measurementEndpoint);
         this.experimentId = experimentId;
 
-        if (objectPath.isEmpty()) {
+        if (objectPath.isEmpty())
+        {
             this.measurementObjPath = defaultMeasurementObjPath;
             this.latencyImageName = defaultLatencyImgName;
-        } else {
+        }
+        else
+        {
             // object path is in the format {objectPath}{latencyImageName}
             int objectPathSplitIndex = objectPath.lastIndexOf("/") + 1;
 
             String measurementObjPath = objectPath.substring(0, objectPathSplitIndex);
-            if (measurementObjPath.isEmpty()) {
+            if (measurementObjPath.isEmpty())
+            {
                 this.measurementObjPath = "/";
-            } else {
+            }
+            else
+            {
                 this.measurementObjPath = measurementObjPath;
             }
 
