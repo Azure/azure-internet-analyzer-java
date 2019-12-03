@@ -29,7 +29,7 @@ public class TestUtils {
     public static final String imgPattern = "^.*\\/apc\\/trans.gif.*$";
     public static final String uuidPattern = "[a-fA-F0-9]{32}";
     public static final int testPort = 8090;
-    public static final String reportSuccess = "Report Success" + System.lineSeparator();
+    public static final String reportSuccess = "Report Success\r\n";
 
     public static String GetFileContents(String localConfigPath) throws IOException {
         String fullFilePath = System.getProperty("user.dir") + localConfigPath;
@@ -62,7 +62,7 @@ public class TestUtils {
         }
     }
 
-    public static void ValidateFetchReportItem(JSONObject reportItem, Map<String, String> expectedHeaderMap) throws JSONException {
+    public static void ValidateFetchReportItem(JSONObject reportItem, Map<String, String> expectedCustomValues) throws JSONException {
 
         String connectionType = reportItem.getString("Conn");
         assertNotNull(connectionType);
@@ -81,16 +81,17 @@ public class TestUtils {
         assertNotNull(measurementType);
         assert (MeasurementTypes.isFetchMeasurementType(measurementType));
 
-        if (expectedHeaderMap != null) {
-            for (String key : expectedHeaderMap.keySet()) {
+        if (expectedCustomValues != null) {
+            for (String key : expectedCustomValues.keySet()) {
 
                 String headerValue = null;
                 try {
                     headerValue = reportItem.getString(key);
-                    assertEquals(headerValue, expectedHeaderMap.get(key));
+                    assertEquals(headerValue, expectedCustomValues.get(key));
                 } catch (JSONException ex) {
+
                     // header value is null, so expected Header Map for key should also be null
-                    assertNull(expectedHeaderMap.get(key));
+                    assertNull(expectedCustomValues.get(key));
                 }
             }
         }

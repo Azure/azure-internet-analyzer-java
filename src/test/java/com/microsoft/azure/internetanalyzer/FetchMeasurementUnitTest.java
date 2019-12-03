@@ -33,22 +33,23 @@ public class FetchMeasurementUnitTest {
     public static int measurementTypeHttps = 1;
     public static int measurementTypeHttp = 2;
     public static String experimentId = "ex1";
+
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(TestUtils.testPort);
 
     @Test(expected = IllegalArgumentException.class)
     public void generateFetchUrlsTestEmptyMeasurementEndpoint() {
-        new FetchMeasurement("", 3, experimentId);
+        new FetchMeasurement("", 3, experimentId, "");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void generateFetchUrlsTestInvalidMeasurementType() {
-        new FetchMeasurement("testEndpoint", 4, experimentId);
+        new FetchMeasurement("testEndpoint", 4, experimentId, "");
     }
 
     @Test
     public void generateFetchUrlsTestMeasurementType1() {
-        FetchMeasurement fetchMeasurement = new FetchMeasurement("testEndpoint", 1, experimentId);
+        FetchMeasurement fetchMeasurement = new FetchMeasurement("testEndpoint", 1, experimentId, "");
         Set<FetchMeasurement.FetchUrl> fetchUrls = fetchMeasurement.getFetchUrls();
         int expectedFetchUrlNum = 1;
         String[] expectedFetchUrls = new String[]{"https://testEndpoint/apc/trans.gif"};
@@ -68,7 +69,7 @@ public class FetchMeasurementUnitTest {
 
     @Test
     public void generateFetchUrlsTestMeasurementType1RandomGuid() {
-        FetchMeasurement fetchMeasurement = new FetchMeasurement("*.testEndpoint", 1, experimentId);
+        FetchMeasurement fetchMeasurement = new FetchMeasurement("*.testEndpoint", 1, experimentId, "");
         Set<FetchMeasurement.FetchUrl> fetchUrls = fetchMeasurement.getFetchUrls();
 
         int expectedFetchUrlNum = 1;
@@ -92,7 +93,7 @@ public class FetchMeasurementUnitTest {
 
     @Test
     public void generateFetchUrlsTestMeasurementType2() {
-        FetchMeasurement fetchMeasurement = new FetchMeasurement("testEndpoint2", 2, experimentId);
+        FetchMeasurement fetchMeasurement = new FetchMeasurement("testEndpoint2", 2, experimentId, "");
         Set<FetchMeasurement.FetchUrl> fetchUrls = fetchMeasurement.getFetchUrls();
         int expectedFetchUrlNum = 1;
         String[] expectedFetchUrls = new String[]{"http://testEndpoint2/apc/trans.gif"};
@@ -112,7 +113,7 @@ public class FetchMeasurementUnitTest {
 
     @Test
     public void generateFetchUrlsTestMeasurementType3() {
-        FetchMeasurement fetchMeasurement = new FetchMeasurement("test.Endpoint", 3, experimentId);
+        FetchMeasurement fetchMeasurement = new FetchMeasurement("test.Endpoint", 3, experimentId, "");
         Set<FetchMeasurement.FetchUrl> fetchUrls = fetchMeasurement.getFetchUrls();
         int expectedFetchUrlNum = 2;
         List<String> expectedUrls = new ArrayList<String>();
@@ -129,10 +130,76 @@ public class FetchMeasurementUnitTest {
 
     @Test
     public void generateFetchUrlsTestMeasurementType3RandomGuid() {
-        FetchMeasurement fetchMeasurement = new FetchMeasurement("*.testEndpoint", 3, experimentId);
+        FetchMeasurement fetchMeasurement = new FetchMeasurement("*.testEndpoint", 3, experimentId, "");
         Set<FetchMeasurement.FetchUrl> fetchUrls = fetchMeasurement.getFetchUrls();
         int expectedFetchUrlNum = 2;
         String expectedUrlSuffix = ".testEndpoint/apc/trans.gif";
+        String expectedUrlPrefixHttp = "http://";
+        String expectedUrlPrefixHttps = "https://";
+
+        assertEquals(fetchUrls.size(), expectedFetchUrlNum);
+
+        int i = 0;
+        // validate fetch urls
+        for (FetchMeasurement.FetchUrl fetchUrl : fetchUrls) {
+            String urlStr = fetchUrl.getNextFetchUrl();
+            assertTrue(urlStr.contains(expectedUrlSuffix));
+            assertTrue(urlStr.startsWith(expectedUrlPrefixHttps) || urlStr.startsWith(expectedUrlPrefixHttp));
+            assertTrue(urlStr.length() > expectedUrlSuffix.length() + expectedUrlPrefixHttps.length());
+            i++;
+        }
+    }
+
+    @Test
+    public void generateFetchUrlsTestMeasurementWithMeasurementObjPath() {
+        FetchMeasurement fetchMeasurement = new FetchMeasurement("*.testEndpoint", 3, experimentId, "/myPath/testObj.gif");
+        Set<FetchMeasurement.FetchUrl> fetchUrls = fetchMeasurement.getFetchUrls();
+        int expectedFetchUrlNum = 2;
+        String expectedUrlSuffix = ".testEndpoint/myPath/testObj.gif";
+        String expectedUrlPrefixHttp = "http://";
+        String expectedUrlPrefixHttps = "https://";
+
+        assertEquals(fetchUrls.size(), expectedFetchUrlNum);
+
+        int i = 0;
+        // validate fetch urls
+        for (FetchMeasurement.FetchUrl fetchUrl : fetchUrls) {
+            String urlStr = fetchUrl.getNextFetchUrl();
+            assertTrue(urlStr.contains(expectedUrlSuffix));
+            assertTrue(urlStr.startsWith(expectedUrlPrefixHttps) || urlStr.startsWith(expectedUrlPrefixHttp));
+            assertTrue(urlStr.length() > expectedUrlSuffix.length() + expectedUrlPrefixHttps.length());
+            i++;
+        }
+    }
+
+    @Test
+    public void generateFetchUrlsTestMeasurementWithNoPathWithObjImg() {
+        FetchMeasurement fetchMeasurement = new FetchMeasurement("*.testEndpoint", 3, experimentId, "testObj.gif");
+        Set<FetchMeasurement.FetchUrl> fetchUrls = fetchMeasurement.getFetchUrls();
+        int expectedFetchUrlNum = 2;
+        String expectedUrlSuffix = ".testEndpoint/testObj.gif";
+        String expectedUrlPrefixHttp = "http://";
+        String expectedUrlPrefixHttps = "https://";
+
+        assertEquals(fetchUrls.size(), expectedFetchUrlNum);
+
+        int i = 0;
+        // validate fetch urls
+        for (FetchMeasurement.FetchUrl fetchUrl : fetchUrls) {
+            String urlStr = fetchUrl.getNextFetchUrl();
+            assertTrue(urlStr.contains(expectedUrlSuffix));
+            assertTrue(urlStr.startsWith(expectedUrlPrefixHttps) || urlStr.startsWith(expectedUrlPrefixHttp));
+            assertTrue(urlStr.length() > expectedUrlSuffix.length() + expectedUrlPrefixHttps.length());
+            i++;
+        }
+    }
+
+    @Test
+    public void generateFetchUrlsTestMeasurementWithInvalidMeasurementObjPathStillSucceeeds() {
+        FetchMeasurement fetchMeasurement = new FetchMeasurement("*.testEndpoint", 3, experimentId, "////////ha!/");
+        Set<FetchMeasurement.FetchUrl> fetchUrls = fetchMeasurement.getFetchUrls();
+        int expectedFetchUrlNum = 2;
+        String expectedUrlSuffix = ".testEndpoint////////ha!/";
         String expectedUrlPrefixHttp = "http://";
         String expectedUrlPrefixHttps = "https://";
 
@@ -175,7 +242,7 @@ public class FetchMeasurementUnitTest {
         expectedHeaderMap.put("Sip", testServerIP);
 
         String measurementEndpoint = "localhost:" + TestUtils.testPort + "";
-        FetchMeasurement fetchMeasurement = new FetchMeasurement(measurementEndpoint, measurementTypeHttp, experimentId);
+        FetchMeasurement fetchMeasurement = new FetchMeasurement(measurementEndpoint, measurementTypeHttp, experimentId, "");
         Set<FetchMeasurement.FetchUrl> fetchUrls = fetchMeasurement.getFetchUrls();
         int expectedFetchUrlNum = 1;
         String measurementObject = "trans.gif";
@@ -227,7 +294,7 @@ public class FetchMeasurementUnitTest {
         expectedHeaderMap.put("Sip", null);
 
         String measurementEndpoint = "localhost:" + TestUtils.testPort + "";
-        FetchMeasurement fetchMeasurement = new FetchMeasurement(measurementEndpoint, measurementTypeHttp, experimentId);
+        FetchMeasurement fetchMeasurement = new FetchMeasurement(measurementEndpoint, measurementTypeHttp, experimentId, "");
         Set<FetchMeasurement.FetchUrl> fetchUrls = fetchMeasurement.getFetchUrls();
         int expectedFetchUrlNum = 1;
         String measurementObject = "trans.gif";
@@ -269,7 +336,7 @@ public class FetchMeasurementUnitTest {
                         .withBody("")));
 
         String measurementEndpoint = "localhost:" + TestUtils.testPort + "";
-        FetchMeasurement fetchMeasurement = new FetchMeasurement(measurementEndpoint, measurementTypeHttp, experimentId);
+        FetchMeasurement fetchMeasurement = new FetchMeasurement(measurementEndpoint, measurementTypeHttp, experimentId, "");
         Set<FetchMeasurement.FetchUrl> fetchUrls = fetchMeasurement.getFetchUrls();
         int expectedFetchUrlNum = 1;
         String measurementObject = "trans.gif";
@@ -309,7 +376,7 @@ public class FetchMeasurementUnitTest {
                         .withBody("")));
 
         String measurementEndpoint = "localhost:" + TestUtils.testPort + "";
-        FetchMeasurement fetchMeasurement = new FetchMeasurement(measurementEndpoint, measurementTypeHttp, experimentId);
+        FetchMeasurement fetchMeasurement = new FetchMeasurement(measurementEndpoint, measurementTypeHttp, experimentId, "");
         Set<FetchMeasurement.FetchUrl> fetchUrls = fetchMeasurement.getFetchUrls();
         int expectedFetchUrlNum = 1;
         String measurementObject = "trans.gif";
@@ -352,7 +419,7 @@ public class FetchMeasurementUnitTest {
                         .withBody("")));
 
         String measurementEndpoint = "localhost:" + TestUtils.testPort + "";
-        FetchMeasurement fetchMeasurement = new FetchMeasurement(measurementEndpoint, measurementTypeHttp, experimentId);
+        FetchMeasurement fetchMeasurement = new FetchMeasurement(measurementEndpoint, measurementTypeHttp, experimentId, "");
         Set<FetchMeasurement.FetchUrl> fetchUrls = fetchMeasurement.getFetchUrls();
         int expectedFetchUrlNum = 1;
         String measurementObject = "trans.gif";
@@ -397,7 +464,7 @@ public class FetchMeasurementUnitTest {
                         .withBody("")));
 
         String measurementEndpoint = "*.test.com";
-        FetchMeasurement fetchMeasurement = new FetchMeasurement(measurementEndpoint, measurementTypeHttp, experimentId);
+        FetchMeasurement fetchMeasurement = new FetchMeasurement(measurementEndpoint, measurementTypeHttp, experimentId, "");
         Set<FetchMeasurement.FetchUrl> fetchUrls = fetchMeasurement.getFetchUrls();
         int expectedFetchUrlNum = 1;
         String measurementObject = "trans.gif";

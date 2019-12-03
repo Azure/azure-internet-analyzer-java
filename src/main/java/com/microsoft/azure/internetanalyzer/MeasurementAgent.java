@@ -34,13 +34,15 @@ public class MeasurementAgent {
             int measurementEndpointType = measurementEndpointObj.getInt("m");
             int measurementEndpointWeight = measurementEndpointObj.getInt("w");
             String experimentId = measurementEndpointObj.optString("ex");
+            String objectPath = measurementEndpointObj.optString("o");
 
             if (MeasurementTypes.isSupportedMeasurementType(measurementEndpointType)) {
                 this.measurementEndpoints.add(new MeasurementEndpoint(
                         measurementEndpointWeight,
                         measurementEndpointObj.getString("e"),
                         measurementEndpointType,
-                        experimentId));
+                        experimentId,
+                        objectPath));
                 sumEndpointWeight += measurementEndpointWeight;
             }
         }

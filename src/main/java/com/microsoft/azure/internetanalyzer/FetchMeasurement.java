@@ -28,14 +28,16 @@ import static com.microsoft.azure.internetanalyzer.MeasurementTypes.HTTPS;
 
 public class FetchMeasurement implements IMeasurement {
 
-    private static final String measurementObjPath = "/apc/";
-    private static final String latencyImageName = "trans.gif";
+    private static final String defaultMeasurementObjPath = "/apc/";
+    private static final String defaultLatencyImgName = "trans.gif";
+    private String measurementObjPath;
+    private String latencyImageName;
 
     private int measurementType;
     private String experimentId;
     private Set<FetchUrl> fetchUrls;
 
-    public FetchMeasurement(String measurementEndpoint, int measurementType, String experimentId) {
+    public FetchMeasurement(String measurementEndpoint, int measurementType, String experimentId, String objectPath) {
         if (measurementEndpoint.isEmpty() || !MeasurementTypes.isFetchMeasurementType(measurementType)) {
             throw new IllegalArgumentException("measurementEndpoint is empty or measurementType is invalid");
         }
@@ -43,6 +45,23 @@ public class FetchMeasurement implements IMeasurement {
         this.measurementType = measurementType;
         this.fetchUrls = generateFetchURLs(measurementEndpoint);
         this.experimentId = experimentId;
+
+        if (objectPath.isEmpty()) {
+            this.measurementObjPath = defaultMeasurementObjPath;
+            this.latencyImageName = defaultLatencyImgName;
+        } else {
+            // object path is in the format {objectPath}{latencyImageName}
+            int objectPathSplitIndex = objectPath.lastIndexOf("/") + 1;
+
+            String measurementObjPath = objectPath.substring(0, objectPathSplitIndex);
+            if (measurementObjPath.isEmpty()) {
+                this.measurementObjPath = "/";
+            } else {
+                this.measurementObjPath = measurementObjPath;
+            }
+
+            this.latencyImageName = objectPath.substring(objectPathSplitIndex);
+        }
     }
 
     public Set<FetchUrl> getFetchUrls() {

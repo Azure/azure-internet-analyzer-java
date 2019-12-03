@@ -9,12 +9,14 @@ public class MeasurementEndpoint {
     private String endpoint;
     private int measurementType;
     private String experimentId;
+    private String objectPath;
 
-    public MeasurementEndpoint(int weight, String endpoint, int measurementType, String experimentId) {
+    public MeasurementEndpoint(int weight, String endpoint, int measurementType, String experimentId, String objectPath) {
         this.weight = weight;
         this.endpoint = endpoint;
         this.measurementType = measurementType;
         this.experimentId = experimentId;
+        this.objectPath = objectPath;
     }
 
     public int getWeight() {
@@ -23,7 +25,7 @@ public class MeasurementEndpoint {
 
     public void takeAndReportMeasurements(List<IReportItem> reportItems) throws IOException, CertificateEncodingException {
         if (MeasurementTypes.isFetchMeasurementType(measurementType)) {
-            FetchMeasurement fetchMeasurement = new FetchMeasurement(endpoint, measurementType, experimentId);
+            FetchMeasurement fetchMeasurement = new FetchMeasurement(endpoint, measurementType, experimentId, objectPath);
             fetchMeasurement.takeAndReportMeasurements(reportItems);
         }
     }

@@ -38,7 +38,7 @@ public class MeasurementAgentUnitTest {
         JSONArray expectedUploadEndpoints = new JSONArray(Arrays.asList("localhost:8090/report/r.gif", "localhost:8090/apc/trans.gif"));
         int expectedUploadEndpointCount = 2;
         int expectedMeasurementEndpointCount = 1;
-        String localConfigPath = "/src/test/fixtures/goodSimpleConfig.txt";
+        String localConfigPath = "/testConfiguration/goodSimpleConfig.txt";
         String configContents = TestUtils.GetFileContents(localConfigPath);
 
         MeasurementAgent measurementAgent = new MeasurementAgent(new JSONObject(configContents));
@@ -58,7 +58,7 @@ public class MeasurementAgentUnitTest {
         JSONArray expectedUploadEndpoints = new JSONArray(Arrays.asList("localhost:8090/report/r.gif", "localhost:8090/apc/trans.gif"));
         int expectedUploadEndpointCount = 2;
         int expectedMeasurementEndpointCount = 0;
-        String localConfigPath = "/src/test/fixtures/goodSimpleConfigNotImplementedMeasurementType.txt";
+        String localConfigPath = "/testConfiguration/goodSimpleConfigNotImplementedMeasurementType.txt";
         String configContents = TestUtils.GetFileContents(localConfigPath);
 
         MeasurementAgent measurementAgent = new MeasurementAgent(new JSONObject(configContents));
@@ -78,7 +78,7 @@ public class MeasurementAgentUnitTest {
         JSONArray expectedUploadEndpoints = new JSONArray(Arrays.asList("localhost:8090/report/r.gif"));
         int expectedUploadEndpointCount = 1;
         int expectedMeasurementEndpointCount = 4;
-        String localConfigPath = "/src/test/fixtures/goodComplexConfig.txt";
+        String localConfigPath = "/testConfiguration/goodComplexConfig.txt";
         String configContents = TestUtils.GetFileContents(localConfigPath);
 
         MeasurementAgent measurementAgent = new MeasurementAgent(new JSONObject(configContents));
@@ -98,7 +98,7 @@ public class MeasurementAgentUnitTest {
 
         int expectedUploadEndpointCount = 0;
         int expectedMeasurementEndpointCount = 0;
-        String localConfigPath = "/src/test/fixtures/emptyJsonConfig.txt";
+        String localConfigPath = "/testConfiguration/emptyJsonConfig.txt";
         String configContents = TestUtils.GetFileContents(localConfigPath);
 
         MeasurementAgent measurementAgent = new MeasurementAgent(new JSONObject(configContents));
@@ -115,7 +115,7 @@ public class MeasurementAgentUnitTest {
 
         int expectedUploadEndpointCount = 0;
         int expectedMeasurementEndpointCount = 0;
-        String localConfigPath = "/src/test/fixtures/missingUploadEndpoints.txt";
+        String localConfigPath = "/testConfiguration/missingUploadEndpoints.txt";
         String configContents = TestUtils.GetFileContents(localConfigPath);
 
         MeasurementAgent measurementAgent = new MeasurementAgent(new JSONObject(configContents));
@@ -132,7 +132,7 @@ public class MeasurementAgentUnitTest {
 
         int expectedUploadEndpointCount = 2;
         int expectedMeasurementEndpointCount = 0;
-        String localConfigPath = "/src/test/fixtures/missingWeightConfig.txt";
+        String localConfigPath = "/testConfiguration/missingWeightConfig.txt";
         String configContents = TestUtils.GetFileContents(localConfigPath);
 
         MeasurementAgent measurementAgent = new MeasurementAgent(new JSONObject(configContents));
@@ -147,7 +147,7 @@ public class MeasurementAgentUnitTest {
     @Test
     public void PerformUploadsComplexConfigurationTest() throws JSONException, IOException, CertificateEncodingException {
 
-        String localConfigPath = "/src/test/fixtures/goodComplexConfig.txt";
+        String localConfigPath = "/testConfiguration/goodComplexConfig.txt";
         String configContents = TestUtils.GetFileContents(localConfigPath);
 
         stubFor(get(urlEqualTo(localConfigPath))
@@ -179,8 +179,7 @@ public class MeasurementAgentUnitTest {
 
     @Test
     public void PerformUploadsSimpleWildcardTest() throws JSONException, IOException, CertificateEncodingException {
-
-        String localConfigPath = "/src/test/fixtures/goodSimpleWildcardConfig.txt";
+        String localConfigPath = "/testConfiguration/goodSimpleWildcardConfig.txt";
         String configContents = TestUtils.GetFileContents(localConfigPath);
         stubFor(get(urlEqualTo(localConfigPath))
                 .willReturn(aResponse()
@@ -207,5 +206,6 @@ public class MeasurementAgentUnitTest {
         for (IReportItem reportItem : reportItems) {
             TestUtils.ValidateReportItem(reportItem.getFormattedReportItem());
         }
+
     }
 }
