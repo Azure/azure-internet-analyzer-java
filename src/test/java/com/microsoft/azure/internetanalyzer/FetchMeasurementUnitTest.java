@@ -161,14 +161,12 @@ public class FetchMeasurementUnitTest {
 
         assertEquals(fetchUrls.size(), expectedFetchUrlNum);
 
-        int i = 0;
         // validate fetch urls
         for (FetchMeasurement.FetchUrl fetchUrl : fetchUrls) {
             String urlStr = fetchUrl.getNextFetchUrl();
             assertTrue(urlStr.contains(expectedUrlSuffix));
             assertTrue(urlStr.startsWith(expectedUrlPrefixHttps) || urlStr.startsWith(expectedUrlPrefixHttp));
             assertTrue(urlStr.length() > expectedUrlSuffix.length() + expectedUrlPrefixHttps.length());
-            i++;
         }
     }
 
@@ -205,14 +203,12 @@ public class FetchMeasurementUnitTest {
 
         assertEquals(fetchUrls.size(), expectedFetchUrlNum);
 
-        int i = 0;
         // validate fetch urls
         for (FetchMeasurement.FetchUrl fetchUrl : fetchUrls) {
             String urlStr = fetchUrl.getNextFetchUrl();
             assertTrue(urlStr.contains(expectedUrlSuffix));
             assertTrue(urlStr.startsWith(expectedUrlPrefixHttps) || urlStr.startsWith(expectedUrlPrefixHttp));
             assertTrue(urlStr.length() > expectedUrlSuffix.length() + expectedUrlPrefixHttps.length());
-            i++;
         }
     }
 
