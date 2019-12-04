@@ -46,7 +46,7 @@ public class FetchMeasurement implements IMeasurement {
         this.fetchUrls = generateFetchURLs(measurementEndpoint);
         this.experimentId = experimentId;
 
-        if (objectPath.isEmpty())
+        if (objectPath == null || objectPath.isEmpty())
         {
             this.measurementObjPath = defaultMeasurementObjPath;
             this.latencyImageName = defaultLatencyImgName;

@@ -90,7 +90,7 @@ public class TestUtils {
                     assertEquals(headerValue, expectedCustomValues.get(key));
                 } catch (JSONException ex) {
 
-                    // header value is null, so expected Header Map for key should also be null
+                    // custom value is null, so expected Custom Value Map for key should also be null
                     assertNull(expectedCustomValues.get(key));
                 }
             }
