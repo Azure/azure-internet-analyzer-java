@@ -64,11 +64,11 @@ stages:
               OSVmImage: 'vs2017-win2016'
               ProfileFlag: ''
               JavaVersion: '1.8'
-            Linux - Java LTS:
-              OSName: 'Linux'
-              OSVmImage: 'ubuntu-16.04'
-              ProfileFlag: '-Djava-lts'
-              JavaVersion: '1.11'
+            # Linux - Java LTS:
+            #   OSName: 'Linux'
+            #   OSVmImage: 'ubuntu-16.04'
+            #   ProfileFlag: '-Djava-lts'
+            #   JavaVersion: '1.11'
             macOS - Java LTS:
               OSName: 'macOS'
               OSVmImage: 'macOS-10.13'
