@@ -29,7 +29,7 @@ public class TestUtils {
     public static final String imgPattern = "^.*\\/apc\\/trans.gif.*$";
     public static final String uuidPattern = "[a-fA-F0-9]{32}";
     public static final int testPort = 8090;
-    public static final String reportSuccess = "Report Success" + System.lineSeparator();
+    public static final String reportSuccess = "Report Success\r\n";
 
     public static String GetFileContents(String localConfigPath) throws IOException {
         String fullFilePath = System.getProperty("user.dir") + localConfigPath;
@@ -90,7 +90,7 @@ public class TestUtils {
                     assertEquals(headerValue, expectedCustomValues.get(key));
                 } catch (JSONException ex) {
 
-                    // custom value is null, so expected Custom Value Map for key should also be null
+                    // header value is null, so expected Header Map for key should also be null
                     assertNull(expectedCustomValues.get(key));
                 }
             }

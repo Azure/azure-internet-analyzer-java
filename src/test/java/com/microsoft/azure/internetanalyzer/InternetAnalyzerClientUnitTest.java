@@ -62,11 +62,6 @@ public class InternetAnalyzerClientUnitTest {
                             .withStatus(200)
                             .withBody(configContents)));
 
-            stubFor(get(urlEqualTo("/apc/trans.gif"))
-                    .willReturn(aResponse()
-                            .withStatus(200)
-                            .withBody("")));
-
             stubFor(get(urlMatching(TestUtils.reportUploadPattern))
                     .willReturn(aResponse()
                             .withStatus(200)
@@ -95,11 +90,6 @@ public class InternetAnalyzerClientUnitTest {
                     .willReturn(aResponse()
                             .withStatus(200)
                             .withBody(configContents)));
-
-            stubFor(get(urlEqualTo("/apc/trans.gif"))
-                    .willReturn(aResponse()
-                            .withStatus(200)
-                            .withBody("")));
 
             stubFor(get(urlMatching(TestUtils.reportUploadPattern))
                     .willReturn(aResponse()
@@ -133,11 +123,6 @@ public class InternetAnalyzerClientUnitTest {
                         .withHeader("Content-Type", "text/xml")
                         .withBody(configContents)));
 
-        stubFor(get(urlEqualTo("/apc/trans.gif"))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withBody("")));
-
         stubFor(get(urlMatching(TestUtils.reportUploadPattern))
                 .willReturn(aResponse()
                         .withStatus(200)
@@ -166,11 +151,6 @@ public class InternetAnalyzerClientUnitTest {
                         .withHeader("Content-Type", "text/xml")
                         .withBody(configContents)));
 
-        /*stubFor(get(urlEqualTo("/test/blah/hello.gif"))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withBody("")));*/
-
         stubFor(get(urlMatching(TestUtils.reportUploadPattern))
                 .willReturn(aResponse()
                         .withStatus(200)
@@ -192,6 +172,7 @@ public class InternetAnalyzerClientUnitTest {
         TestUtils.ValidateRawFetchReportUrl(finalUploadUrls.getFirstSuccessfulUrl(), expectedCustomValues);
     }
 
+    @Test
     public void ExecuteWithConfigurationEmptyObjPathTest() throws JSONException, IOException, CertificateEncodingException {
 
         String localConfigPath = "/testConfiguration/emptyObjPathConfig.txt";
@@ -202,16 +183,10 @@ public class InternetAnalyzerClientUnitTest {
                         .withHeader("Content-Type", "text/xml")
                         .withBody(configContents)));
 
-        stubFor(get(urlEqualTo("/apc/trans.gif"))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withBody("")));
-
         stubFor(get(urlMatching(TestUtils.reportUploadPattern))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBody(TestUtils.reportSuccess)));
-
 
         String configurationStr = "http://localhost:" + TestUtils.testPort + localConfigPath;
         String internetAnalyzerConfigurations = InternetAnalyzerClient.getConfiguration(
@@ -238,11 +213,6 @@ public class InternetAnalyzerClientUnitTest {
                         .withStatus(200)
                         .withHeader("Content-Type", "text/xml")
                         .withBody(configContents)));
-
-        stubFor(get(urlEqualTo("/apc/trans.gif"))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withBody("")));
 
         stubFor(get(urlMatching(TestUtils.reportUploadPattern))
                 .willReturn(aResponse()
@@ -271,11 +241,6 @@ public class InternetAnalyzerClientUnitTest {
                         .withStatus(200)
                         .withHeader("Content-Type", "text/xml")
                         .withBody(configContents)));
-
-        stubFor(get(urlEqualTo("/apc/trans.gif"))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withBody("")));
 
         stubFor(get(urlMatching(TestUtils.reportUploadPattern))
                 .willReturn(aResponse()
