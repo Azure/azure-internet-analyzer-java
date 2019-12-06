@@ -93,17 +93,19 @@ public class FetchMeasurement implements IMeasurement {
         long start = System.currentTimeMillis();
         connection = fetchUrl.openConnection();
 
-        if (connection instanceof HttpURLConnection) {
-            ((HttpURLConnection) connection).setInstanceFollowRedirects(true);
-            int status = ((HttpURLConnection) connection).getResponseCode();
-            if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM || status == HttpURLConnection.HTTP_SEE_OTHER) {
-
-                // get redirect url from "location" header field
-                String newUrlStr = connection.getHeaderField("Location");
-                return takeMeasurement(new URL(newUrlStr), connection, connectionType, reportItem);
-            }
-        } else {
+        if (!(connection instanceof HttpURLConnection)) {
             return elapsedTime;
+        }
+
+        HttpURLConnection httpConnection = (HttpURLConnection)connection;
+        httpConnection.setInstanceFollowRedirects(true);
+
+        int status = httpConnection.getResponseCode();
+        if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM || status == HttpURLConnection.HTTP_SEE_OTHER) {
+
+            // get redirect url from "location" header field
+            String newUrlStr = connection.getHeaderField("Location");
+            return takeMeasurement(new URL(newUrlStr), connection, connectionType, reportItem);
         }
 
         try {
@@ -119,7 +121,7 @@ public class FetchMeasurement implements IMeasurement {
             elapsedTime = elapsedTime * ((HttpURLConnection) connection).getResponseCode();
         } finally {
             if (connectionType == ConnectionType.Warm || elapsedTime < 0) {
-                ((HttpURLConnection) connection).disconnect();
+                httpConnection.disconnect();
             }
         }
 

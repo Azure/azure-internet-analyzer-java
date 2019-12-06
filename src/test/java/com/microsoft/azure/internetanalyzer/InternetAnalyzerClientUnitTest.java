@@ -9,11 +9,16 @@ package com.microsoft.azure.internetanalyzer;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
+import org.apache.http.HttpStatus;
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.security.cert.CertificateEncodingException;
 import java.util.HashMap;
 import java.util.Map;
@@ -156,7 +161,6 @@ public class InternetAnalyzerClientUnitTest {
                         .withStatus(200)
                         .withBody(TestUtils.reportSuccess)));
 
-
         String configurationStr = "http://localhost:" + TestUtils.testPort + localConfigPath;
         String internetAnalyzerConfigurations = InternetAnalyzerClient.getConfiguration(
                 new String[]{configurationStr});
@@ -168,6 +172,7 @@ public class InternetAnalyzerClientUnitTest {
 
         Map<String, String> expectedCustomValues = new HashMap<>();
         expectedCustomValues.put("Object", "hello.gif");
+        expectedCustomValues.put("Result", "-404");
 
         TestUtils.ValidateRawFetchReportUrl(finalUploadUrls.getFirstSuccessfulUrl(), expectedCustomValues);
     }
@@ -256,7 +261,21 @@ public class InternetAnalyzerClientUnitTest {
 
         InternetAnalyzerClient.firstSuccessfulHttpGetResult finalUploadUrls = InternetAnalyzerClient.execute("INTERNET-ANALYZER-TEST", "tagtest", internetAnalyzerConfigurations, reportUploadUrlScheme);
         assertTrue(finalUploadUrls.getResult().equals(TestUtils.reportSuccess));
-        TestUtils.ValidateRawFetchReportUrl(finalUploadUrls.getFirstSuccessfulUrl());
+        String uploadUrl = finalUploadUrls.getFirstSuccessfulUrl();
+        TestUtils.ValidateRawFetchReportUrl(uploadUrl);
+
+        String decodedUrl = URLDecoder.decode(uploadUrl);
+        String dataStr = decodedUrl.split("&DATA=")[1];
+        JSONArray dataObj = new JSONArray(dataStr);
+        for (int i = 0; i < dataObj.length(); i++) {
+            JSONObject resultElement = dataObj.getJSONObject(i);
+            int result = resultElement.getInt("Result");
+            if(resultElement.getInt("T") == 2){
+                assertTrue(result < 0);
+            } else {
+                assertTrue(result >= 0);
+            }
+        }
     }
 
     @Test(expected = IllegalArgumentException.class)
