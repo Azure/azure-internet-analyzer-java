@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.net.ssl.HttpsURLConnection;
-
 import static com.microsoft.azure.internetanalyzer.MeasurementTypes.HTTP;
 import static com.microsoft.azure.internetanalyzer.MeasurementTypes.HTTPS;
 
@@ -30,7 +28,6 @@ public class FetchMeasurement implements IMeasurement {
 
     private static final String defaultMeasurementObjPath = "/apc/";
     private static final String defaultLatencyImgName = "trans.gif";
-    private static final int defaultUrlRedirectLimit = 50;
 
     private String measurementObjPath;
     private String latencyImageName;
@@ -48,7 +45,7 @@ public class FetchMeasurement implements IMeasurement {
         this.fetchUrls = generateFetchURLs(measurementEndpoint);
         this.experimentId = experimentId;
 
-        if (objectPath.isEmpty()) {
+        if (objectPath == null || objectPath.isEmpty()) {
             this.measurementObjPath = defaultMeasurementObjPath;
             this.latencyImageName = defaultLatencyImgName;
         } else {
@@ -76,47 +73,37 @@ public class FetchMeasurement implements IMeasurement {
         for (FetchUrl fetchUrlObj : fetchUrls) {
             FetchReportItem reportItemCold = new FetchReportItem();
             URL fetchUrl = new URL(fetchUrlObj.getNextFetchUrl());
-            long timeElapsedCold = takeMeasurement(fetchUrl, connection, ConnectionType.Cold, reportItemCold, defaultUrlRedirectLimit);
+            long timeElapsedCold = takeMeasurement(fetchUrl, connection, ConnectionType.Cold, reportItemCold);
             reportItemCold.addMeasurementProperties(fetchUrlObj.getCurrentFetchEndpoint(), timeElapsedCold, fetchUrlObj.getMeasurementType(), ConnectionType.Cold.toString(), latencyImageName, experimentId);
             report.add(reportItemCold);
 
             // only take the warm measurement if the cold measurement succeeds; otherwise if the warm measurement succeeds without a previous cold measurement, it is essentially a cold measurement
             if (timeElapsedCold > 0) {
                 FetchReportItem reportItemWarm = new FetchReportItem();
-                long timeElapsedWarm = takeMeasurement(fetchUrl, connection, ConnectionType.Warm, reportItemWarm, defaultUrlRedirectLimit);
+                long timeElapsedWarm = takeMeasurement(fetchUrl, connection, ConnectionType.Warm, reportItemWarm);
                 reportItemWarm.addMeasurementProperties(fetchUrlObj.getCurrentFetchEndpoint(), timeElapsedWarm, fetchUrlObj.getMeasurementType(), ConnectionType.Warm.toString(), latencyImageName, experimentId);
                 report.add(reportItemWarm);
             }
         }
     }
 
-    private long takeMeasurement(URL fetchUrl, URLConnection connection, ConnectionType connectionType, FetchReportItem reportItem, int urlRedirectLimit) throws IOException, CertificateEncodingException {
+    private long takeMeasurement(URL fetchUrl, URLConnection connection, ConnectionType connectionType, FetchReportItem reportItem) throws IOException, CertificateEncodingException {
         long elapsedTime = -1;
-
-        if (urlRedirectLimit <= 0) {
-            return elapsedTime;
-        }
 
         long start = System.currentTimeMillis();
         connection = fetchUrl.openConnection();
 
-        // enable urlConnection redirects
-        if (connection instanceof HttpsURLConnection) {
-            ((HttpsURLConnection) connection).setInstanceFollowRedirects(true);
-            HttpsURLConnection.setFollowRedirects(true);
-        } else if (connection instanceof HttpURLConnection) {
-            ((HttpURLConnection) connection).setInstanceFollowRedirects(true);
-            HttpURLConnection.setFollowRedirects(true);
-        }
-
         if (connection instanceof HttpURLConnection) {
+            ((HttpURLConnection) connection).setInstanceFollowRedirects(true);
             int status = ((HttpURLConnection) connection).getResponseCode();
-            if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM || status == HttpURLConnection.HTTP_SEE_OTHER)
-            {
+            if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM || status == HttpURLConnection.HTTP_SEE_OTHER) {
+
                 // get redirect url from "location" header field
                 String newUrlStr = connection.getHeaderField("Location");
-                return takeMeasurement(new URL(newUrlStr), connection, connectionType, reportItem, --urlRedirectLimit);
+                return takeMeasurement(new URL(newUrlStr), connection, connectionType, reportItem);
             }
+        } else {
+            return elapsedTime;
         }
 
         try {
@@ -129,18 +116,10 @@ public class FetchMeasurement implements IMeasurement {
                 elapsedTime = finish - start;
             }
         } catch (Exception e) {
-            if (connection instanceof HttpsURLConnection) {
-                elapsedTime = elapsedTime * ((HttpsURLConnection) connection).getResponseCode();
-            } else if (connection instanceof HttpURLConnection) {
-                elapsedTime = elapsedTime * ((HttpURLConnection) connection).getResponseCode();
-            }
+            elapsedTime = elapsedTime * ((HttpURLConnection) connection).getResponseCode();
         } finally {
             if (connectionType == ConnectionType.Warm || elapsedTime < 0) {
-                if (connection instanceof HttpsURLConnection) {
-                    ((HttpsURLConnection) connection).disconnect();
-                } else if (connection instanceof HttpURLConnection) {
-                    ((HttpURLConnection) connection).disconnect();
-                }
+                ((HttpURLConnection) connection).disconnect();
             }
         }
 
