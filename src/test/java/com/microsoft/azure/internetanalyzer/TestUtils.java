@@ -83,10 +83,17 @@ public class TestUtils {
 
         if (expectedCustomValues != null) {
             for (String key : expectedCustomValues.keySet()) {
-                if(key == "Result"){
-                    assertEquals(reportItem.getInt(key), Integer.parseInt(expectedCustomValues.get(key)));
-                } else{
-                    assertEquals(reportItem.getString(key), expectedCustomValues.get(key));
+
+                try {
+                    if (key == "Result") {
+                        assertEquals(reportItem.getInt(key), Integer.parseInt(expectedCustomValues.get(key)));
+                    } else {
+                        assertEquals(reportItem.getString(key), expectedCustomValues.get(key));
+                    }
+                } catch (JSONException ex) {
+
+                    // header value is null, so expected Header Map for key should also be null
+                    assertNull(expectedCustomValues.get(key));
                 }
             }
         }
