@@ -98,6 +98,8 @@ public class FetchMeasurement implements IMeasurement {
         }
 
         HttpURLConnection httpConnection = (HttpURLConnection)connection;
+
+        // enables Https->Https redirects & Http->Http redirects
         httpConnection.setInstanceFollowRedirects(true);
 
         int status = httpConnection.getResponseCode();
@@ -105,7 +107,11 @@ public class FetchMeasurement implements IMeasurement {
 
             // get redirect url from "location" header field
             String newUrlStr = connection.getHeaderField("Location");
-            return takeMeasurement(new URL(newUrlStr), connection, connectionType, reportItem);
+
+            // redirects http -> https traffic; ignores unsafe https->http redirect
+            if(newUrlStr.toLowerCase().startsWith("https")) {
+                return takeMeasurement(new URL(newUrlStr), connection, connectionType, reportItem);
+            }
         }
 
         try {
@@ -118,7 +124,7 @@ public class FetchMeasurement implements IMeasurement {
                 elapsedTime = finish - start;
             }
         } catch (Exception e) {
-            elapsedTime = elapsedTime * ((HttpURLConnection) connection).getResponseCode();
+            elapsedTime = elapsedTime * httpConnection.getResponseCode();
         } finally {
             if (connectionType == ConnectionType.Warm || elapsedTime < 0) {
                 httpConnection.disconnect();

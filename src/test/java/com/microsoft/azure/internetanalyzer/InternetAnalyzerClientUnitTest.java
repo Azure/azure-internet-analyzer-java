@@ -206,6 +206,19 @@ public class InternetAnalyzerClientUnitTest {
         expectedCustomValues.put("Object", "trans.gif");
 
         TestUtils.ValidateRawFetchReportUrl(finalUploadUrls.getFirstSuccessfulUrl(), expectedCustomValues);
+
+        String decodedUrl = URLDecoder.decode(finalUploadUrls.getFirstSuccessfulUrl());
+        String dataStr = decodedUrl.split("&DATA=")[1];
+        JSONArray dataObj = new JSONArray(dataStr);
+        for (int i = 0; i < dataObj.length(); i++) {
+            JSONObject resultElement = dataObj.getJSONObject(i);
+            int result = resultElement.getInt("Result");
+            if(resultElement.getInt("T") == 2){
+                assertTrue(result < 0);
+            } else {
+                assertTrue(result >= 0);
+            }
+        }
     }
 
     @Test
@@ -252,7 +265,6 @@ public class InternetAnalyzerClientUnitTest {
                         .withStatus(200)
                         .withBody(TestUtils.reportSuccess)));
 
-
         String configurationStr = "http://localhost:" + TestUtils.testPort + localConfigPath;
         String internetAnalyzerConfigurations = InternetAnalyzerClient.getConfiguration(
                 new String[]{configurationStr});
@@ -263,19 +275,6 @@ public class InternetAnalyzerClientUnitTest {
         assertTrue(finalUploadUrls.getResult().equals(TestUtils.reportSuccess));
         String uploadUrl = finalUploadUrls.getFirstSuccessfulUrl();
         TestUtils.ValidateRawFetchReportUrl(uploadUrl);
-
-        String decodedUrl = URLDecoder.decode(uploadUrl);
-        String dataStr = decodedUrl.split("&DATA=")[1];
-        JSONArray dataObj = new JSONArray(dataStr);
-        for (int i = 0; i < dataObj.length(); i++) {
-            JSONObject resultElement = dataObj.getJSONObject(i);
-            int result = resultElement.getInt("Result");
-            if(resultElement.getInt("T") == 2){
-                assertTrue(result < 0);
-            } else {
-                assertTrue(result >= 0);
-            }
-        }
     }
 
     @Test(expected = IllegalArgumentException.class)
