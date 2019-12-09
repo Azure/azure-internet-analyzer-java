@@ -1,3 +1,6 @@
+# Azure Internet Analyzer java library
+
+[![Build Status](https://dev.azure.com/AzureFrontDoorOSS/Builds/_apis/build/status/azure-internet-analyzer-java?branchName=master)](https://dev.azure.com/AzureFrontDoorOSS/Builds/_build/latest?definitionId=2&branchName=master)
 
 # Contributing
 
