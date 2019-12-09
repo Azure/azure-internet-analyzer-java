@@ -28,6 +28,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class InternetAnalyzerClientUnitTest {
@@ -156,6 +157,10 @@ public class InternetAnalyzerClientUnitTest {
                         .withHeader("Content-Type", "text/xml")
                         .withBody(configContents)));
 
+        stubFor(get(urlMatching("^.*\\/test\\/path\\/hello.gif?.*$"))
+                .willReturn(aResponse()
+                        .withStatus(200)));
+
         stubFor(get(urlMatching(TestUtils.reportUploadPattern))
                 .willReturn(aResponse()
                         .withStatus(200)
@@ -172,9 +177,19 @@ public class InternetAnalyzerClientUnitTest {
 
         Map<String, String> expectedCustomValues = new HashMap<>();
         expectedCustomValues.put("Object", "hello.gif");
-        expectedCustomValues.put("Result", "-404");
 
         TestUtils.ValidateRawFetchReportUrl(finalUploadUrls.getFirstSuccessfulUrl(), expectedCustomValues);
+
+        String decodedUrl = URLDecoder.decode(finalUploadUrls.getFirstSuccessfulUrl());
+        String dataStr = decodedUrl.split("&DATA=")[1];
+        JSONArray dataObj = new JSONArray(dataStr);
+
+        assertEquals(2, dataObj.length());
+        for (int i = 0; i < dataObj.length(); i++) {
+            JSONObject resultElement = dataObj.getJSONObject(i);
+            int result = resultElement.getInt("Result");
+            assertTrue(result >= 0);
+        }
     }
 
     @Test
@@ -187,6 +202,10 @@ public class InternetAnalyzerClientUnitTest {
                         .withStatus(200)
                         .withHeader("Content-Type", "text/xml")
                         .withBody(configContents)));
+
+        stubFor(get(urlMatching("^.*\\/apc\\/trans.gif?.*$"))
+                .willReturn(aResponse()
+                        .withStatus(200)));
 
         stubFor(get(urlMatching(TestUtils.reportUploadPattern))
                 .willReturn(aResponse()
@@ -213,11 +232,7 @@ public class InternetAnalyzerClientUnitTest {
         for (int i = 0; i < dataObj.length(); i++) {
             JSONObject resultElement = dataObj.getJSONObject(i);
             int result = resultElement.getInt("Result");
-            if(resultElement.getInt("T") == 2){
-                assertTrue(result < 0);
-            } else {
-                assertTrue(result >= 0);
-            }
+            assertTrue(result >= 0);
         }
     }
 

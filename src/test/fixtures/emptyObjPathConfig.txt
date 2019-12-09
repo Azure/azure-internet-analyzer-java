@@ -1,1 +1,1 @@
-{"s":5000,"n":3,"e":[{"e":"outlook.office.com","w":50,"m":3,"o":""}],"r":["localhost:8090/report/r.gif"]}
+{"s":5000,"n":3,"e":[{"e":"localhost:8090","w":50,"m":2,"o":""}],"r":["localhost:8090/report/r.gif"]}
