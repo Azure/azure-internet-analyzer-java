@@ -182,6 +182,10 @@ public class InternetAnalyzerClientUnitTest {
 
         String decodedUrl = URLDecoder.decode(finalUploadUrls.getFirstSuccessfulUrl());
         String dataStr = decodedUrl.split("&DATA=")[1];
+
+        // For test debugging
+        System.out.println(dataStr);
+
         JSONArray dataObj = new JSONArray(dataStr);
 
         for (int i = 0; i < dataObj.length(); i++) {
@@ -227,6 +231,10 @@ public class InternetAnalyzerClientUnitTest {
 
         String decodedUrl = URLDecoder.decode(finalUploadUrls.getFirstSuccessfulUrl());
         String dataStr = decodedUrl.split("&DATA=")[1];
+
+        // For test debugging
+        System.out.println(dataStr);
+
         JSONArray dataObj = new JSONArray(dataStr);
 
         for (int i = 0; i < dataObj.length(); i++) {
