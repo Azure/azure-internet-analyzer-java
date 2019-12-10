@@ -184,7 +184,6 @@ public class InternetAnalyzerClientUnitTest {
         String dataStr = decodedUrl.split("&DATA=")[1];
         JSONArray dataObj = new JSONArray(dataStr);
 
-        assertEquals(2, dataObj.length());
         for (int i = 0; i < dataObj.length(); i++) {
             JSONObject resultElement = dataObj.getJSONObject(i);
             int result = resultElement.getInt("Result");
@@ -230,7 +229,6 @@ public class InternetAnalyzerClientUnitTest {
         String dataStr = decodedUrl.split("&DATA=")[1];
         JSONArray dataObj = new JSONArray(dataStr);
 
-        assertEquals(2, dataObj.length());
         for (int i = 0; i < dataObj.length(); i++) {
             JSONObject resultElement = dataObj.getJSONObject(i);
             int result = resultElement.getInt("Result");
