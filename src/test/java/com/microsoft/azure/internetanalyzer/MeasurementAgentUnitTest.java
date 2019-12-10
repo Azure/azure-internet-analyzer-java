@@ -179,7 +179,6 @@ public class MeasurementAgentUnitTest {
 
     @Test
     public void PerformUploadsSimpleWildcardTest() throws JSONException, IOException, CertificateEncodingException {
-
         String localConfigPath = "/src/test/fixtures/goodSimpleWildcardConfig.txt";
         String configContents = TestUtils.GetFileContents(localConfigPath);
         stubFor(get(urlEqualTo(localConfigPath))
@@ -207,5 +206,6 @@ public class MeasurementAgentUnitTest {
         for (IReportItem reportItem : reportItems) {
             TestUtils.ValidateReportItem(reportItem.getFormattedReportItem());
         }
+
     }
 }

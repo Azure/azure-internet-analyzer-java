@@ -62,7 +62,7 @@ public class TestUtils {
         }
     }
 
-    public static void ValidateFetchReportItem(JSONObject reportItem, Map<String, String> expectedHeaderMap) throws JSONException {
+    public static void ValidateFetchReportItem(JSONObject reportItem, Map<String, String> expectedCustomValues) throws JSONException {
 
         String connectionType = reportItem.getString("Conn");
         assertNotNull(connectionType);
@@ -81,16 +81,19 @@ public class TestUtils {
         assertNotNull(measurementType);
         assert (MeasurementTypes.isFetchMeasurementType(measurementType));
 
-        if (expectedHeaderMap != null) {
-            for (String key : expectedHeaderMap.keySet()) {
+        if (expectedCustomValues != null) {
+            for (String key : expectedCustomValues.keySet()) {
 
-                String headerValue = null;
                 try {
-                    headerValue = reportItem.getString(key);
-                    assertEquals(headerValue, expectedHeaderMap.get(key));
+                    if (key == "Result") {
+                        assertEquals(reportItem.getInt(key), Integer.parseInt(expectedCustomValues.get(key)));
+                    } else {
+                        assertEquals(reportItem.getString(key), expectedCustomValues.get(key));
+                    }
                 } catch (JSONException ex) {
-                    // header value is null, so expected Header Map for key should also be null
-                    assertNull(expectedHeaderMap.get(key));
+
+                    // custom value is null, so expected custom Value for key should also be null
+                    assertNull(expectedCustomValues.get(key));
                 }
             }
         }

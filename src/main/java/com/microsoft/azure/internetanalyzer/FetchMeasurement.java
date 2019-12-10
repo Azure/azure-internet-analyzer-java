@@ -21,21 +21,22 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.net.ssl.HttpsURLConnection;
-
 import static com.microsoft.azure.internetanalyzer.MeasurementTypes.HTTP;
 import static com.microsoft.azure.internetanalyzer.MeasurementTypes.HTTPS;
 
 public class FetchMeasurement implements IMeasurement {
 
-    private static final String measurementObjPath = "/apc/";
-    private static final String latencyImageName = "trans.gif";
+    private static final String defaultMeasurementObjPath = "/apc/";
+    private static final String defaultLatencyImgName = "trans.gif";
+
+    private String measurementObjPath;
+    private String latencyImageName;
 
     private int measurementType;
     private String experimentId;
     private Set<FetchUrl> fetchUrls;
 
-    public FetchMeasurement(String measurementEndpoint, int measurementType, String experimentId) {
+    public FetchMeasurement(String measurementEndpoint, int measurementType, String experimentId, String objectPath) {
         if (measurementEndpoint.isEmpty() || !MeasurementTypes.isFetchMeasurementType(measurementType)) {
             throw new IllegalArgumentException("measurementEndpoint is empty or measurementType is invalid");
         }
@@ -43,6 +44,23 @@ public class FetchMeasurement implements IMeasurement {
         this.measurementType = measurementType;
         this.fetchUrls = generateFetchURLs(measurementEndpoint);
         this.experimentId = experimentId;
+
+        if (objectPath == null || objectPath.isEmpty()) {
+            this.measurementObjPath = defaultMeasurementObjPath;
+            this.latencyImageName = defaultLatencyImgName;
+        } else {
+            // object path is in the format {objectPath}{latencyImageName}
+            int objectPathSplitIndex = objectPath.lastIndexOf("/") + 1;
+
+            String measurementObjPath = objectPath.substring(0, objectPathSplitIndex);
+            if (measurementObjPath.isEmpty()) {
+                this.measurementObjPath = "/";
+            } else {
+                this.measurementObjPath = measurementObjPath;
+            }
+
+            this.latencyImageName = objectPath.substring(objectPathSplitIndex);
+        }
     }
 
     public Set<FetchUrl> getFetchUrls() {
@@ -54,26 +72,47 @@ public class FetchMeasurement implements IMeasurement {
         URLConnection connection = null;
         for (FetchUrl fetchUrlObj : fetchUrls) {
             FetchReportItem reportItemCold = new FetchReportItem();
-            long timeElapsedCold = takeMeasurement(fetchUrlObj, connection, ConnectionType.Cold, reportItemCold);
+            URL fetchUrl = new URL(fetchUrlObj.getNextFetchUrl());
+            long timeElapsedCold = takeMeasurement(fetchUrl, connection, ConnectionType.Cold, reportItemCold);
             reportItemCold.addMeasurementProperties(fetchUrlObj.getCurrentFetchEndpoint(), timeElapsedCold, fetchUrlObj.getMeasurementType(), ConnectionType.Cold.toString(), latencyImageName, experimentId);
             report.add(reportItemCold);
 
             // only take the warm measurement if the cold measurement succeeds; otherwise if the warm measurement succeeds without a previous cold measurement, it is essentially a cold measurement
             if (timeElapsedCold > 0) {
                 FetchReportItem reportItemWarm = new FetchReportItem();
-                long timeElapsedWarm = takeMeasurement(fetchUrlObj, connection, ConnectionType.Warm, reportItemWarm);
+                long timeElapsedWarm = takeMeasurement(fetchUrl, connection, ConnectionType.Warm, reportItemWarm);
                 reportItemWarm.addMeasurementProperties(fetchUrlObj.getCurrentFetchEndpoint(), timeElapsedWarm, fetchUrlObj.getMeasurementType(), ConnectionType.Warm.toString(), latencyImageName, experimentId);
                 report.add(reportItemWarm);
             }
         }
     }
 
-    private long takeMeasurement(FetchUrl fetchUrlObj, URLConnection connection, ConnectionType connectionType, FetchReportItem reportItem) throws IOException, CertificateEncodingException {
+    private long takeMeasurement(URL fetchUrl, URLConnection connection, ConnectionType connectionType, FetchReportItem reportItem) throws IOException, CertificateEncodingException {
         long elapsedTime = -1;
 
-        URL fetchUrl = new URL(fetchUrlObj.getNextFetchUrl());
         long start = System.currentTimeMillis();
         connection = fetchUrl.openConnection();
+
+        if (!(connection instanceof HttpURLConnection)) {
+            return elapsedTime;
+        }
+
+        HttpURLConnection httpConnection = (HttpURLConnection)connection;
+
+        // enables Https->Https redirects & Http->Http redirects
+        httpConnection.setInstanceFollowRedirects(true);
+
+        int status = httpConnection.getResponseCode();
+        if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM || status == HttpURLConnection.HTTP_SEE_OTHER) {
+
+            // get redirect url from "location" header field
+            String newUrlStr = connection.getHeaderField("Location");
+
+            // redirects http -> https traffic; ignores unsafe https->http redirect
+            if(newUrlStr.toLowerCase().startsWith("https")) {
+                return takeMeasurement(new URL(newUrlStr), connection, connectionType, reportItem);
+            }
+        }
 
         try {
             InputStream in = new BufferedInputStream(connection.getInputStream());
@@ -85,18 +124,10 @@ public class FetchMeasurement implements IMeasurement {
                 elapsedTime = finish - start;
             }
         } catch (Exception e) {
-            if (connection instanceof HttpsURLConnection) {
-                elapsedTime = elapsedTime * ((HttpsURLConnection) connection).getResponseCode();
-            } else if (connection instanceof HttpURLConnection) {
-                elapsedTime = elapsedTime * ((HttpURLConnection) connection).getResponseCode();
-            }
+            elapsedTime = elapsedTime * httpConnection.getResponseCode();
         } finally {
             if (connectionType == ConnectionType.Warm || elapsedTime < 0) {
-                if (connection instanceof HttpsURLConnection) {
-                    ((HttpsURLConnection) connection).disconnect();
-                } else if (connection instanceof HttpURLConnection) {
-                    ((HttpURLConnection) connection).disconnect();
-                }
+                httpConnection.disconnect();
             }
         }
 
@@ -141,8 +172,9 @@ public class FetchMeasurement implements IMeasurement {
     }
 
     public class FetchUrl {
-        private String httpsStr = "https";
-        private String httpStr = "http";
+        private final String httpsStr = "https";
+        private final String httpStr = "http";
+
         private int measurementType;
         private String measurementEndpoint;
         private String currentFetchEndpoint;
@@ -190,5 +222,4 @@ public class FetchMeasurement implements IMeasurement {
             return urlPath.toString();
         }
     }
-
 }
