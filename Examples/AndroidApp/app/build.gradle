@@ -24,8 +24,8 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'com.google.android.material:material:1.0.0'
 
-    // Dependency on a local internetanalyzer library module
-    implementation project(":internetanalyzerlibrary")
+    // Dependency on internetanalyzer library module
+    implementation 'com.microsoft.azure:azure-internet-analyzer-java:1.0.0-beta.1'
 
     // Dependency on local binaries
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
