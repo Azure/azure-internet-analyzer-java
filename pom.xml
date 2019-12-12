@@ -9,7 +9,7 @@
 
     <groupId>com.microsoft.azure</groupId>
     <artifactId>azure-internet-analyzer-java</artifactId>
-    <version>1.0.0-beta.1</version>
+    <version>1.0.0-beta.2</version>
 
     <licenses>
         <license>
