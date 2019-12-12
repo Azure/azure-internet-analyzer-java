@@ -66,7 +66,7 @@ public class TestUtils {
 
         String connectionType = reportItem.getString("Conn");
         assertNotNull(connectionType);
-        assert (connectionType.equalsIgnoreCase("Cold") || connectionType.equalsIgnoreCase("Warm"));
+        assert (connectionType.equalsIgnoreCase("cold") || connectionType.equalsIgnoreCase("warm"));
 
         String requestId = reportItem.getString("RequestID");
         assertNotNull(requestId);
