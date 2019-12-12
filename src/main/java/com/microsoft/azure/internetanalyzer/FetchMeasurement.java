@@ -73,15 +73,15 @@ public class FetchMeasurement implements IMeasurement {
         for (FetchUrl fetchUrlObj : fetchUrls) {
             FetchReportItem reportItemCold = new FetchReportItem();
             URL fetchUrl = new URL(fetchUrlObj.getNextFetchUrl());
-            long timeElapsedCold = takeMeasurement(fetchUrl, connection, ConnectionType.Cold, reportItemCold);
-            reportItemCold.addMeasurementProperties(fetchUrlObj.getCurrentFetchEndpoint(), timeElapsedCold, fetchUrlObj.getMeasurementType(), ConnectionType.Cold.toString(), latencyImageName, experimentId);
+            long timeElapsedCold = takeMeasurement(fetchUrl, connection, ConnectionType.cold, reportItemCold);
+            reportItemCold.addMeasurementProperties(fetchUrlObj.getCurrentFetchEndpoint(), timeElapsedCold, fetchUrlObj.getMeasurementType(), ConnectionType.cold.toString(), latencyImageName, experimentId);
             report.add(reportItemCold);
 
             // only take the warm measurement if the cold measurement succeeds; otherwise if the warm measurement succeeds without a previous cold measurement, it is essentially a cold measurement
             if (timeElapsedCold > 0) {
                 FetchReportItem reportItemWarm = new FetchReportItem();
-                long timeElapsedWarm = takeMeasurement(fetchUrl, connection, ConnectionType.Warm, reportItemWarm);
-                reportItemWarm.addMeasurementProperties(fetchUrlObj.getCurrentFetchEndpoint(), timeElapsedWarm, fetchUrlObj.getMeasurementType(), ConnectionType.Warm.toString(), latencyImageName, experimentId);
+                long timeElapsedWarm = takeMeasurement(fetchUrl, connection, ConnectionType.warm, reportItemWarm);
+                reportItemWarm.addMeasurementProperties(fetchUrlObj.getCurrentFetchEndpoint(), timeElapsedWarm, fetchUrlObj.getMeasurementType(), ConnectionType.warm.toString(), latencyImageName, experimentId);
                 report.add(reportItemWarm);
             }
         }
@@ -126,7 +126,7 @@ public class FetchMeasurement implements IMeasurement {
         } catch (Exception e) {
             elapsedTime = elapsedTime * httpConnection.getResponseCode();
         } finally {
-            if (connectionType == ConnectionType.Warm || elapsedTime < 0) {
+            if (connectionType == ConnectionType.warm || elapsedTime < 0) {
                 httpConnection.disconnect();
             }
         }
@@ -167,8 +167,8 @@ public class FetchMeasurement implements IMeasurement {
     }
 
     private enum ConnectionType {
-        Warm,
-        Cold
+        warm,
+        cold
     }
 
     public class FetchUrl {

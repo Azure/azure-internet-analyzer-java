@@ -105,14 +105,19 @@ public class InternetAnalyzerClient {
         return executeFirstSuccessfulHttpGet(uploadReports);
     }
 
-    private static String formatReport(List<IReportItem> reportItems, String monitorId, String tag) throws JSONException, UnsupportedEncodingException {
+   private static String formatReport(List<IReportItem> reportItems, String monitorId, String tag) throws JSONException, UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
-        result.append("MonitorId=").append(monitorId);
+        result.append("MonitorID=").append(monitorId);
         result.append("&rid=").append(UUID.randomUUID().toString().replace("-", ""));
         result.append("&w3c=").append("true");
         result.append("&prot=").append("https:");
-        result.append("&v=").append("InternetAnalyzer-Android-App:" + InternetAnalyzerClient.class.getPackage().getImplementationVersion());
-        result.append("&tag=").append(tag);
+
+        result.append("&v=");
+        appendEncodedValue(result, "InternetAnalyzer-Android-App:" + InternetAnalyzerClient.class.getPackage().getImplementationVersion());
+
+        result.append("&tag=");
+        appendEncodedValue(result, tag);
+
         result.append("&DATA=");
         JSONArray data = new JSONArray();
 
@@ -120,8 +125,12 @@ public class InternetAnalyzerClient {
             data.put(reportItem.getFormattedReportItem());
         }
 
-        result.append(data.toString());
-        return URLEncoder.encode(result.toString(), StandardCharsets.UTF_8.toString());
+        appendEncodedValue(result, data.toString());
+        return result.toString();
+    }
+
+    private static void appendEncodedValue(StringBuilder result, String value) throws UnsupportedEncodingException {
+        result.append(URLEncoder.encode(value, StandardCharsets.UTF_8.toString()));
     }
 
     public static class firstSuccessfulHttpGetResult {
