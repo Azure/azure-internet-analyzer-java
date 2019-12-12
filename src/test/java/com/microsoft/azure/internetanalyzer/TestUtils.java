@@ -53,7 +53,7 @@ public class TestUtils {
 
     public static void ValidateRawFetchReportUrl(String rawUrl, Map<String, String> expectedHeaderMap) throws JSONException {
         String decodedUrl = URLDecoder.decode(rawUrl);
-        assertTrue(decodedUrl.startsWith("http://localhost:8090/report/r.gif?MonitorId=INTERNET-ANALYZER-TEST"));
+        assertTrue(decodedUrl.startsWith("http://localhost:8090/report/r.gif?MonitorID=INTERNET-ANALYZER-TEST"));
         String dataStr = decodedUrl.split("&DATA=")[1];
         JSONArray dataObj = new JSONArray(dataStr);
         for (int i = 0; i < dataObj.length(); i++) {

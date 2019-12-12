@@ -443,7 +443,7 @@ public class FetchMeasurementUnitTest {
         fetchMeasurement.takeAndReportMeasurements(reportItems);
         assertEquals(reportItems.size(), expectedReportItems);
         assertEquals(reportItems.get(0).getFormattedReportItem().get("Result"), (long) -500);
-        assertEquals(reportItems.get(0).getFormattedReportItem().get("Conn"), "Cold");
+        assertEquals(reportItems.get(0).getFormattedReportItem().get("Conn"), "cold");
         assertEquals(reportItems.get(0).getFormattedReportItem().get("Ex"), "ex1");
     }
 
