@@ -37,7 +37,7 @@
         <packageOutputDirectory>${project.build.directory}</packageOutputDirectory>
 
         <!-- Project Dependencies -->
-        <json-version>20140107</json-version>
+        <json-version>20230227</json-version>
 
         <!-- Test dependency versions -->
         <junit-version>4.13.1</junit-version>
